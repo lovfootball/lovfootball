@@ -1,9 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ブンデスリーガ移籍情報</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>ブンデスリーガ移籍情報＆バイエルン公式ニュース</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ニュース部分の簡単なスタイル */
+    #bayern-news {
+      background-color: #fff0f0;
+      border: 2px solid #b50000;
+      padding: 15px;
+      margin-top: 30px;
+      border-radius: 8px;
+    }
+    #bayern-news h2 {
+      color: #b50000;
+    }
+    #bayern-news a {
+      color: #b50000;
+      text-decoration: none;
+    }
+    #bayern-news a:hover {
+      text-decoration: underline;
+    }
+    .news-item {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
   <h1>ブンデスリーガ：2025夏の移籍情報</h1>
@@ -12,6 +35,48 @@
     <li>🧤 ノイアー（バイエルン → 引退）</li>
     <li>🇩🇰 ホイルンド（マンU → ライプツィヒ）移籍金：45M€</li>
   </ul>
+
+  <!-- バイエルン公式ニュース -->
+  <section id="bayern-news">
+    <h2>バイエルン公式ニュース</h2>
+    <div id="news-list">読み込み中...</div>
+  </section>
+
   <a href="index.html">← トップに戻る</a>
+
+  <script>
+    const rssUrl = "https://fcbayern.com/en/news/feed";
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById('news-list');
+        container.innerHTML = "";
+
+        if (!data.items || data.items.length === 0) {
+          container.textContent = "ニュースが見つかりませんでした。";
+          return;
+        }
+
+        data.items.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'news-item';
+
+          const a = document.createElement('a');
+          a.href = item.link;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = item.title;
+
+          div.appendChild(a);
+          container.appendChild(div);
+        });
+      })
+      .catch(error => {
+        document.getElementById('news-list').textContent = "ニュースの読み込みに失敗しました。";
+        console.error(error);
+      });
+  </script>
 </body>
 </html>
